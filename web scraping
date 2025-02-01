@@ -1,0 +1,87 @@
+import requests
+from bs4 import BeautifulSoup
+
+url = "https://example.com/product-page"
+response = requests.get(url)
+
+# If the request was successful
+if response.status_code == 200:
+    soup = BeautifulSoup(response.content, "html.parser")
+    
+    # Example: Extract product title and price
+    title = soup.find("h1", class_="product-title").text.strip()
+    price = soup.find("span", class_="product-price").text.strip()
+    
+    print(f"Product: {title}, Price: {price}")
+import requests
+from bs4 import BeautifulSoup
+
+def crawl(url, depth):
+    if depth == 0:
+        return
+    
+    response = requests.get(url)
+    soup = BeautifulSoup(response.content, "html.parser")
+    
+    # Scraping specific data (e.g., links or articles)
+    links = soup.find_all("a", href=True)
+    for link in links:
+        print(f"Crawling: {link['href']}")
+        crawl(link['href'], depth - 1)
+
+start_url = "https://example.com"
+crawl(start_url, depth=3)  # Set a depth limit
+import re
+
+def filter_data(data):
+    # Filter for products containing the word 'phone'
+    if re.search("phone", data, re.IGNORECASE):
+        return data
+    return None
+import csv
+
+data = [
+    {"product": "Phone A", "price": "$299"},
+    {"product": "Phone B", "price": "$499"}
+]
+
+with open("scraped_data.csv", "w", newline='') as file:
+    writer = csv.DictWriter(file, fieldnames=["product", "price"])
+    writer.writeheader()
+    writer.writerows(data)
+import json
+
+with open("scraped_data.json", "w") as file:
+    json.dump(data, file, indent=4)
+for item in data:
+    print(f"Product: {item['product']}, Price: {item['price']}")
+import requests
+from time import sleep
+
+def fetch_with_retry(url, retries=3):
+    for _ in range(retries):
+        try:
+            response = requests.get(url)
+            if response.status_code == 200:
+                return response
+            else:
+                print(f"Failed to fetch {url}, status code: {response.status_code}")
+        except requests.RequestException as e:
+            print(f"Error fetching {url}: {e}")
+        sleep(2)  # Wait before retrying
+    return None
+import time
+import requests
+
+def fetch_page(url):
+    response = requests.get(url)
+    time.sleep(1)  # Wait 1 second before making the next request
+    return response
+def is_allowed_to_scrape(url):
+    robots_txt_url = f"{url}/robots.txt"
+    response = requests.get(robots_txt_url)
+    if response.status_code == 200:
+        content = response.text
+        if "Disallow" in content:
+            return False  # Return False if scraping is disallowed
+    return True
